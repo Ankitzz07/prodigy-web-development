@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stopwatch</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            text-align: center;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        #display {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+
+        .buttons button {
+            font-size: 1rem;
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #startPauseBtn {
+            background-color: #28a745;
+            color: white;
+        }
+
+        #resetBtn {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        #lapBtn {
+            background-color: #007bff;
+            color: white;
+        }
+
+        #laps {
+            list-style-type: none;
+            padding: 0;
+            margin-top: 20px;
+        }
+
+        #laps li {
+            background: #f4f4f4;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Stopwatch</h1>
+        <div id="display">00:00:00</div>
+        <div class="buttons">
+            <button id="startPauseBtn">Start</button>
+            <button id="resetBtn">Reset</button>
+            <button id="lapBtn">Lap</button>
+        </div>
+        <ul id="laps"></ul>
+    </div>
+    <script>
+        let startTime, updatedTime, difference, tInterval, running = false;
+        let hours = 0, minutes = 0, seconds = 0;
+
+        const display = document.getElementById('display');
+        const startPauseBtn = document.getElementById('startPauseBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const lapBtn = document.getElementById('lapBtn');
+        const laps = document.getElementById('laps');
+
+        startPauseBtn.addEventListener('click', startPause);
+        resetBtn.addEventListener('click', reset);
+        lapBtn.addEventListener('click', recordLap);
+
+        function startPause() {
+            if (!running) {
+                startTime = new Date().getTime();
+                tInterval = setInterval(updateTime, 1000);
+                startPauseBtn.textContent = 'Pause';
+                startPauseBtn.style.backgroundColor = '#dc3545';
+                running = true;
+            } else {
+                clearInterval(tInterval);
+                startPauseBtn.textContent = 'Start';
+                startPauseBtn.style.backgroundColor = '#28a745';
+                running = false;
+            }
+        }
+
+        function reset() {
+            clearInterval(tInterval);
+            running = false;
+            startPauseBtn.textContent = 'Start';
+            startPauseBtn.style.backgroundColor = '#28a745';
+            display.textContent = '00:00:00';
+            hours = minutes = seconds = 0;
+            laps.innerHTML = '';
+        }
+
+        function updateTime() {
+            updatedTime = new Date().getTime();
+            difference = updatedTime - startTime;
+
+            hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+            seconds = Math.floor((difference % (1000 * 60)) / 1000);
+
+            display.textContent = (hours < 10 ? '0' : '') + hours + ':' + (minutes < 10 ? '0' : '') + minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
+        }
+
+        function recordLap() {
+            if (running) {
+                const lapTime = document.createElement('li');
+                lapTime.textContent = display.textContent;
+                laps.appendChild(lapTime);
+            }
+        }
+    </script>
+</body>
+</html>
